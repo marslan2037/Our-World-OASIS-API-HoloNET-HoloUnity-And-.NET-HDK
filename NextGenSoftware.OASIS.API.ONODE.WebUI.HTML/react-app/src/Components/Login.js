@@ -1,11 +1,12 @@
 import React from 'react';
 
-import ShowIcon from '../img/visible-icon.svg';
-import HideIcon from '../img/hidden-icon.svg';
+import ShowIcon from '../assets/images/visible-icon.svg';
+import HideIcon from '../assets/images/hidden-icon.svg';
 
 import Alert from './Alert';
-import '../CSS/Login.css';
+import '../css/Login.css';
 
+import { Modal } from 'react-bootstrap';
 import Loader from 'react-loader-spinner';
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -37,57 +38,6 @@ export default class Login extends React.Component {
             .required("No password provided.")
             .min(8, "Password is too short - should be 8 characters minimum.")
     })
-
-    // onLogin(event) {
-
-    // event.preventDefault();
-    // console.log(`${this.state.email}`);
-    // let email = document.getElementById('login-email').value;
-    // let password = document.getElementById('login-password').value;
-    // let userObject = {
-    //   email,
-    //   password
-    // }
-    // const userAction = async () => {
-    //   console.log('doing api call');
-
-    //   const response = await fetch('https://api.oasisplatform.world/api/avatar/authenticate', {
-    //     method: 'POST',
-    //     body: JSON.stringify(userObject), // string or object
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     }
-    //   });
-    //   if (response.status === 200) {
-    //     const myJson = await response.json(); //extract JSON from the http response
-    //     alert(myJson.message);
-
-    //     // hide the login/signup buttons
-    //     var elementList = document.getElementsByClassName("nav-logins");
-    //     var avatarDropdowm = document.getElementByClassName("nav-avatar-dropdowm");
-
-    //     for (var i = 0; i < elementList.length; i++) {
-    //       elementList[i].classList.add('hide-logins')
-    //     }
-    //     avatarDropdowm.classList.add('enabled')
-    //     //===============================//
-
-    //     window.location.reload();
-    //   } else {
-    //     const myJson = await response.json(); //extract JSON from the http response
-    //     alert(myJson.title);
-    //     window.location.reload();
-    //   }
-
-    // }
-    // userAction();
-    // }
-
-    // componentDidUpdate(pProps, pState) {
-    //     if (pState.loading !== this.state.loading) {
-    //         this.setState({loading: this.state.loading})
-    //     }
-    // }
 
     handleLogin = () => {
         let data = {
@@ -126,6 +76,7 @@ export default class Login extends React.Component {
 
     render() {
         const { alert, showPassword } = this.state;
+        console.log(this.props);
 
         return (
             <Formik
@@ -146,72 +97,77 @@ export default class Login extends React.Component {
                 }}
             >
                 {({ values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit }) => (
-                    <form className="login-form" onSubmit={handleSubmit}>
-                        {alert ? <Alert message={alert.text} type={alert.type} /> : null}
-                        <div className="login-title">
-                            <h1 className="login-header">Log In</h1>
+                    
+                    <Modal centered className="custom-modal" show={this.props.show} onHide={this.props.hide}>
+                        <Modal.Body>
+                            <span className="form-cross-icon" onClick={this.props.hide}>
+                                <i className="fa fa-times"></i>
+                            </span>
+                            
+                            <form className="custom-form" onSubmit={handleSubmit}>
+                                {alert ? <Alert message={alert.text} type={alert.type} /> : null}
+                                <div className="form-header">
+                                    <h2>Log In</h2>
 
-                            <p className="login-title-text">
-                                Don't have an account? <span onClick={this.props.change} className="link">Sign Up!</span>
-                            </p>
-                        </div>
-
-                        <div className="login-inputs">
-
-                            <div className={this.handleFormFieldClass(errors.email, touched.email)}>
-                                <label htmlFor="login-email">EMAIL</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={values.email}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    placeholder="name@example.com"
-                                />
-                                <span className="text-danger">{errors.email && touched.email && errors.email}</span>
-                            </div>
-
-                            <div className={this.handleFormFieldClass(errors.password, touched.password)}>
-                                <label htmlFor="login-password">PASSWORD</label>
-                                <div className="have-icon">
-                                    <input
-                                        type={`${showPassword ? "text" : "password"}`}
-                                        name="password"
-                                        value={values.password}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        placeholder="password"
-                                    />
-                                    <img
-                                        className="field-icon"
-                                        onClick={() => this.setState({ showPassword: !showPassword })}
-                                        src={showPassword ? ShowIcon : HideIcon}
-                                        alt="icon"
-                                    />
+                                    <p>
+                                        Don't have an account? 
+                                        <span className="text-link" onClick={this.props.change}> Sign Up!</span>
+                                    </p>
                                 </div>
-                                <span className="text-danger">{errors.password && touched.password && errors.password}</span>
-                            </div>
 
-                            <label className="link">Forgot Password?</label>
-                            <div>
-                                <input type="checkbox" name="remember-login" id="remember-login" />
-                                <label htmlFor="remember-login">Remember Me</label>
-                            </div>
+                                <div className="form-inputs">
+                                    <div className={this.handleFormFieldClass(errors.email, touched.email)}>
+                                        <label>EMAIL</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={values.email}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            placeholder="name@example.com"
+                                        />
+                                        <span className="text-danger">{errors.email && touched.email && errors.email}</span>
+                                    </div>
 
-                            {
-                                this.state.loading
-                                    ?
+                                    <div className={this.handleFormFieldClass(errors.password, touched.password)}>
+                                        <label>PASSWORD</label>
+                                        <div className="have-icon">
+                                            <input
+                                                type={`${showPassword ? "text" : "password"}`}
+                                                name="password"
+                                                value={values.password}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                placeholder="password"
+                                            />
+                                            <img
+                                                className="field-icon"
+                                                onClick={() => this.setState({ showPassword: !showPassword })}
+                                                src={showPassword ? ShowIcon : HideIcon}
+                                                alt="icon"
+                                            />
+                                        </div>
+                                        <span className="text-danger">{errors.password && touched.password && errors.password}</span>
+                                    </div>
 
-                                    <button type="submit" disabled className="login-submit">
-                                        Logging in <Loader type="Oval" height={15} width={15} color="#fff" />
+                                    <div className="forgot-password">
+                                        <label className="text-link">Forgot Password?</label>
+                                    </div>
+
+                                    <div className="remember-me">
+                                        <label>
+                                            <input type="checkbox" name="remember-login" id="remember-login" />
+                                            Remember me
+                                        </label>
+                                    </div>
+
+                                    <button type="submit" className="submit-button" disabled={isSubmitting}>
+                                        {this.state.loading ? 'Logging in ' : 'Submit '} {this.state.loading ? <Loader type="Oval" height={15} width={15} color="#fff" /> : null}
                                     </button>
-
-                                    :
-
-                                    <button type="submit" className="login-submit" disabled={isSubmitting}>Submit</button>
-                            }
-                        </div>
-                    </form>
+                                </div>
+                            </form>
+                        </Modal.Body>
+                    </Modal>
                 )}
             </Formik>
         )
